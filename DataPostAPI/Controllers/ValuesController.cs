@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Net;
 using System.Text;
+using DataPostAPI.FireBaseDB;
 
 namespace DataPostAPI.Controllers
 {
@@ -47,9 +48,24 @@ namespace DataPostAPI.Controllers
 
         // GET api/values/data/5
         [HttpGet("data/{id}")]
-        public  ActionResult<PostedDataModel> Get(int id)
+        public  ActionResult<PostedDataModel> Get(string id)
         {
-            List<string> values = GetValuesDB.GetValuesFromDB(id);
+            int ID;
+            if (id.Contains("Omar"))
+                ID = 1;
+
+            else if (id.Contains("Mahmud"))
+                ID = 2;
+            else if (id.Contains("Yasser"))
+                ID = 3;
+            else if (id.Contains("Kilany"))
+                ID = 4;
+            else if (id.Contains("Talat"))
+                ID = 5;
+            else
+                ID = 1;
+            Console.WriteLine(ID.ToString());
+            List<string> values = GetValuesDB.GetValuesFromDB(ID);
             PostedDataModel pd = new PostedDataModel();
                                                         //I don't need values[0] because it is the ID used by the database
             pd.CrimeScreenshot = values[1];
@@ -57,7 +73,7 @@ namespace DataPostAPI.Controllers
             pd.AnomalyType = values[3];
             pd.ActionPriority = values[4];
             pd.ZoneID = Int32.Parse(values[5]);
-
+           
             return pd;
         }
 
@@ -66,6 +82,8 @@ namespace DataPostAPI.Controllers
         [HttpPost]
         public async Task<string> Post([FromForm] string value, [FromForm] string dt, [FromForm] string zone, [FromForm] string anomalyType, [FromForm] string anomalyPriority)
         {
+                    //Anomaly data recive part:
+
             PostedDataModel pdm = new PostedDataModel();
             pdm.CrimeScreenshot = value;
             pdm.AnomalyDateTime = dt;
@@ -73,9 +91,27 @@ namespace DataPostAPI.Controllers
             pdm.AnomalyType = anomalyType;
             pdm.ActionPriority = anomalyPriority;
             string result = PostValuesDB.PostValuesToDB(pdm);
+
+                    //send notification part:
+
             NotificationModel nm = Data.SendNotification.GetDeviceIDFromDB(Int32.Parse(zone), anomalyType);
             ResponseModel notificationResult = await _notificationService.SendNotification(nm);
             result += "\n IsSuccess : " + notificationResult.IsSuccess.ToString();
+           
+                    //send action part:
+
+            int anomalyTypeNumber;
+            if (pdm.AnomalyType.Contains("Explosion"))
+                anomalyTypeNumber = 2;
+            else if (pdm.AnomalyType.Contains("Fighting"))
+                anomalyTypeNumber = 4;
+            else if (pdm.AnomalyType.Contains("Shoplifting"))
+                anomalyTypeNumber = 3;
+            else
+                anomalyTypeNumber = 1;
+            SendActionToESP send = new SendActionToESP();
+            FirebaseResponse response = await send.SendActionTypeToESP(anomalyTypeNumber, pdm.ZoneID);
+
             return result;
         }
 
@@ -85,7 +121,17 @@ namespace DataPostAPI.Controllers
         [HttpPut("{id}")]
         public async Task<string> Put(string id, [FromForm] string value)
         {
-            string result = PutValuesDB.PutValuesToDB(value, id);
+            int ID;
+            if (id.Contains("Omar"))
+                ID = 1;
+
+            else if (id.Contains("Mahmud"))
+                ID = 2;
+            else if (id.Contains("Yasser"))
+                ID = 3;
+            else
+                ID = 1;
+            string result = PutValuesDB.PutValuesToDB(value, ID.ToString());
             return result;
 
         }

@@ -24,18 +24,34 @@ namespace DataPostAPI.Data
                     Locationconnection.Open();
                     command.Parameters.Add("userName", SqlDbType.VarChar).Value = userName;
                     SqlDataReader Locationreader = command.ExecuteReader();
-                    while (Locationreader.Read())
+                    if (Locationreader.HasRows)
                     {
-                        for (int i = 0; i <= Locationreader.FieldCount - 1; i++)
+                      
+                        while (Locationreader.Read())
                         {
-                            ValuesFromDB.Add(Locationreader[i].ToString());
+                            for (int i = 0; i <= Locationreader.FieldCount - 1; i++)
+                            {
+                                ValuesFromDB.Add(Locationreader[i].ToString());
+                            }
                         }
+                        Locationreader.Close();
+
+                        Client client = new Client();
+                        client.ClientName = ValuesFromDB[1];
+                        client.Password = ValuesFromDB[2];
+                        return client;
+
+
                     }
-                    Locationreader.Close();
-                    Client client = new Client();
-                    client.ClientName = ValuesFromDB[1];
-                    client.Password = ValuesFromDB[2];
-                    return client;
+                    else 
+                    {
+
+                        Client client = new Client();
+                        client.ClientName = "not found!";
+                        return client;
+
+
+                    }
                 }
                 catch (Exception ex)
                 {

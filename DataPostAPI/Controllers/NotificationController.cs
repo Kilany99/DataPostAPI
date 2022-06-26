@@ -1,4 +1,6 @@
-﻿using DataPostAPI.Models;
+﻿using DataPostAPI.Data;
+using DataPostAPI.FireBaseDB;
+using DataPostAPI.Models;
 using DataPostAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -29,5 +31,16 @@ namespace DataPostAPI.Controllers
             var result = await _notificationService.SendNotification(nm);
             return result;
         }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<FirebaseResponse> put( int id)
+        {
+            SendActionToESP send = new SendActionToESP();
+            FirebaseResponse response = await send.SendActionTypeToESP(id);
+            return response;
+
+        }
     }
+
 }

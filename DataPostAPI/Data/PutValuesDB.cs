@@ -14,13 +14,11 @@ namespace DataPostAPI.Data
 
             string connetionString = null;
             string sql = null;
-            string ID = id.ToString();
-            string Value = value; 
             // All the info required to reach your db. See connectionstrings.com
             connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
 
             // Prepare a proper parameterized query 
-            sql = "UPDATE Client SET DeviceToken = @Value WHERE ClientName = @ID ";
+            sql = "UPDATE Client SET DeviceToken = @value WHERE ClientName = @id ";
             using (SqlConnection cnn = new SqlConnection(connetionString))
             {
                 try
@@ -28,8 +26,8 @@ namespace DataPostAPI.Data
                     cnn.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, cnn))
                     {
-                        cmd.Parameters.Add("Value", SqlDbType.VarChar).Value = value;
-                        cmd.Parameters.Add("ID", SqlDbType.VarChar).Value = id;
+                        cmd.Parameters.Add("value", SqlDbType.VarChar).Value = value;
+                        cmd.Parameters.Add("id", SqlDbType.VarChar).Value = id;
                         int rowsAdded = cmd.ExecuteNonQuery();
                         if (rowsAdded > 0)
                             return ("Row updated!!");

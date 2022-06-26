@@ -14,14 +14,35 @@ namespace DataPostAPI.Controllers
     {
 
         [HttpPost]
-        [Route("Login")]
-        public async Task<string> Login([FromForm] string userName, [FromForm] string pass)
+        public async Task<LoginModel> Login([FromBody] LoginModel loginModel)
         {
-            Client clientFromDB = LoginDB.LoginToDB(userName);
-            if (clientFromDB.ClientName.CompareTo(userName)==0 && clientFromDB.Password.CompareTo(pass)==0)
-                return "200";
+            string userId = loginModel.userId;
+            string pass = loginModel.Password;
+            Client clientFromDB = LoginDB.LoginToDB(userId);
+            if(clientFromDB.ClientName.CompareTo("not found!")!=0)
+            {
+                Console.WriteLine(clientFromDB.ClientName +" " + clientFromDB.Password);
+                if (String.Equals(clientFromDB.ClientName,userId) && String.Equals(clientFromDB.Password, pass))
+                {
+                    loginModel.ResponseCode = "200";
+                    loginModel.ResponseMessage = "Success!";
+                    return loginModel;
+                }
+                else
+                {
+                    loginModel.ResponseCode = "401";
+                    loginModel.ResponseMessage = "not Success! 1";
+                    return loginModel;
+
+                }
+            }
             else
-                return "401";
+            {
+                loginModel.ResponseCode = "401";
+                loginModel.ResponseMessage = "not Success! 2";
+                return loginModel;
+
+            }
             
 
         }

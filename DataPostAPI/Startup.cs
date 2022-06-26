@@ -1,11 +1,13 @@
 using CorePush.Apple;
 using CorePush.Google;
+using DataPostAPI.Models;
 using DataPostAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,10 +24,10 @@ namespace DataPostAPI
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,7 +37,7 @@ namespace DataPostAPI
             services.AddHttpClient<ApnSender>();
 
             // Configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("FcmNotification");
+            var appSettingsSection = configuration.GetSection("FcmNotification");
             services.Configure<FcmNotificationSetting>(appSettingsSection);
 
             services.AddControllers();
@@ -43,6 +45,10 @@ namespace DataPostAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DataPostAPI", Version = "v1" });
             });
+            services.AddDbContext<ClientContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DevConnection")));
+            services.AddCors();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,12 +60,17 @@ namespace DataPostAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DataPostAPI v1"));
             }
+            app.UseCors(options =>
+                options.WithOrigins("http://localhost:4200")
+   .            AllowAnyMethod()
+   .            AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
@@ -69,6 +80,7 @@ namespace DataPostAPI
             {
                 await context.Response.WriteAsync("404 Not Found. Try Again!");
             });
+
         }
     }
 }
