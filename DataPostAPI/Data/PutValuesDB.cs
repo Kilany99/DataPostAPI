@@ -9,8 +9,9 @@ namespace DataPostAPI.Data
 {
     public class PutValuesDB
     {
-        public static string PutValuesToDB(string value, string id)
+        public static string PutValuesToDB(string Value, string Id)
         {
+            
 
             string connetionString = null;
             string sql = null;
@@ -26,8 +27,8 @@ namespace DataPostAPI.Data
                     cnn.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, cnn))
                     {
-                        cmd.Parameters.Add("value", SqlDbType.VarChar).Value = value;
-                        cmd.Parameters.Add("id", SqlDbType.VarChar).Value = id;
+                        cmd.Parameters.Add("value", SqlDbType.VarChar).Value = Value;
+                        cmd.Parameters.Add("id", SqlDbType.VarChar).Value = Id;
                         int rowsAdded = cmd.ExecuteNonQuery();
                         if (rowsAdded > 0)
                             return ("Row updated!!");

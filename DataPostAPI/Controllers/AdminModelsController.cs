@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataPostAPI.Models;
-using DataPostAPI.Data;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DataPostAPI.Controllers
@@ -14,47 +13,47 @@ namespace DataPostAPI.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientsController : ControllerBase
+    public class AdminModelsController : ControllerBase
     {
         private readonly ClientContext _context;
 
-        public ClientsController(ClientContext context)
+        public AdminModelsController(ClientContext context)
         {
             _context = context;
         }
 
-        // GET: api/Clients
+        // GET: api/AdminModels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClient()
+        public async Task<ActionResult<IEnumerable<AdminModel>>> GetAdmins()
         {
-            return await _context.Client.ToListAsync();
+            return await _context.Admins.ToListAsync();
         }
 
-        // GET: api/Clients/5
+        // GET: api/AdminModels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Client>> GetClient(int id)
+        public async Task<ActionResult<AdminModel>> GetAdminModel(int id)
         {
-            var client = await _context.Client.FindAsync(id);
+            var adminModel = await _context.Admins.FindAsync(id);
 
-            if (client == null)
+            if (adminModel == null)
             {
                 return NotFound();
             }
 
-            return client;
+            return adminModel;
         }
 
-        // PUT: api/Clients/5
+        // PUT: api/AdminModels/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutClient(int id, Client client)
+        public async Task<IActionResult> PutAdminModel(int id, AdminModel adminModel)
         {
-            if (id != client.ClientId)
+            if (id != adminModel.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(client).State = EntityState.Modified;
+            _context.Entry(adminModel).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +61,7 @@ namespace DataPostAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClientExists(id))
+                if (!AdminModelExists(id))
                 {
                     return NotFound();
                 }
@@ -75,39 +74,36 @@ namespace DataPostAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Clients
+        // POST: api/AdminModels
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<string> PostClient(Client client)
+        public async Task<ActionResult<AdminModel>> PostAdminModel(AdminModel adminModel)
         {
-            Client clientInfo = new Client();
-            clientInfo.ClientName = client.ClientName;
-            clientInfo.Password = client.Password;
-            clientInfo.ZoneID = client.ZoneID;
-            clientInfo.DeviceToken = "";
-            return PostValuesDB.PostClientToDB(clientInfo);
+            _context.Admins.Add(adminModel);
+            await _context.SaveChangesAsync();
 
+            return CreatedAtAction("GetAdminModel", new { id = adminModel.Id }, adminModel);
         }
 
-        // DELETE: api/Clients/5
+        // DELETE: api/AdminModels/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClient(int id)
+        public async Task<IActionResult> DeleteAdminModel(int id)
         {
-            var client = await _context.Client.FindAsync(id);
-            if (client == null)
+            var adminModel = await _context.Admins.FindAsync(id);
+            if (adminModel == null)
             {
                 return NotFound();
             }
 
-            _context.Client.Remove(client);
+            _context.Admins.Remove(adminModel);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ClientExists(int id)
+        private bool AdminModelExists(int id)
         {
-            return _context.Client.Any(e => e.ClientId == id);
+            return _context.Admins.Any(e => e.Id == id);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace DataPostAPI.Controllers
         public async Task<FirebaseResponse> put( int id)
         {
             SendActionToESP send = new SendActionToESP();
-            FirebaseResponse response = await send.SendActionTypeToESP(id);
+            FirebaseResponse response = await send.SendActionTypeToESP(id,1);
             return response;
 
         }

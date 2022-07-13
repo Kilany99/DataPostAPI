@@ -16,16 +16,17 @@ namespace DataPostAPI.Controllers
         [HttpPost]
         public async Task<LoginModel> Login([FromBody] LoginModel loginModel)
         {
+            Console.WriteLine(loginModel.userId +"\n" + loginModel.Password);
             string userId = loginModel.userId;
             string pass = loginModel.Password;
             Client clientFromDB = LoginDB.LoginToDB(userId);
             if(clientFromDB.ClientName.CompareTo("not found!")!=0)
             {
-                Console.WriteLine(clientFromDB.ClientName +" " + clientFromDB.Password);
                 if (String.Equals(clientFromDB.ClientName,userId) && String.Equals(clientFromDB.Password, pass))
                 {
                     loginModel.ResponseCode = "200";
                     loginModel.ResponseMessage = "Success!";
+
                     return loginModel;
                 }
                 else

@@ -1,7 +1,9 @@
 using CorePush.Apple;
 using CorePush.Google;
+using DataPostAPI.Handlers;
 using DataPostAPI.Models;
 using DataPostAPI.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +50,8 @@ namespace DataPostAPI
             services.AddDbContext<ClientContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DevConnection")));
             services.AddCors();
+            services.AddAuthentication("Authentication")
+                .AddScheme<AuthenticationSchemeOptions, _AuthenticationHandler>("Authentication",null);
 
         }
 

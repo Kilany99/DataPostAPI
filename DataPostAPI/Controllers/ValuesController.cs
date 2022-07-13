@@ -67,13 +67,13 @@ namespace DataPostAPI.Controllers
             Console.WriteLine(ID.ToString());
             List<string> values = GetValuesDB.GetValuesFromDB(ID);
             PostedDataModel pd = new PostedDataModel();
-                                                        //I don't need values[0] because it is the ID used by the database
+            pd.PostedDataId = 0;                                            //I don't need values[0] because it is the ID used by the database
             pd.CrimeScreenshot = values[1];
             pd.AnomalyDateTime = values[2];
             pd.AnomalyType = values[3];
             pd.ActionPriority = values[4];
             pd.ZoneID = Int32.Parse(values[5]);
-           
+            pd.respone = "";
             return pd;
         }
 
@@ -119,20 +119,13 @@ namespace DataPostAPI.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<string> Put(string id, [FromForm] string value)
+        public async Task<PutResponseModel> Put(string id, [FromBody] string value)
         {
-            int ID;
-            if (id.Contains("Omar"))
-                ID = 1;
-
-            else if (id.Contains("Mahmud"))
-                ID = 2;
-            else if (id.Contains("Yasser"))
-                ID = 3;
-            else
-                ID = 1;
-            string result = PutValuesDB.PutValuesToDB(value, ID.ToString());
-            return result;
+            Console.WriteLine(id + "   " + value);
+            PutResponseModel prm = new PutResponseModel();
+            prm.ResponseCode = PutValuesDB.PutValuesToDB(value, id);
+            Console.WriteLine(prm.ResponseCode);
+            return prm;
 
         }
 
