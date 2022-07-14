@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -18,13 +19,37 @@ namespace DataPostAPI.Handlers
         {
             if(!Request.Headers.ContainsKey("Authoraization"))
                 return AuthenticateResult.Fail("Authoraization was not found !");
-            var authenticationHeaderValue = AuthenticationHeaderValue.Parse(Request.Headers["Authoraization"]);
-            var bytes = Convert.FromBase64String(authenticationHeaderValue.Parameter);
-            string [] credentials = Encoding.UTF8.GetString(bytes).Split(":");
-            string adminName = credentials[0];
-            string adminPass = credentials[1];
-            AdminModel admin = _context.Admins.Where(admin => admin.Admin_id == adminName && admin.Ad_Password == adminPass).FirstOrDefault();
-            return AuthenticateResult.Fail("Need to implement !");
+
+            try
+            {
+
+                var authenticationHeaderValue = AuthenticationHeaderValue.Parse(Request.Headers["Authoraization"]);
+                var bytes = Convert.FromBase64String(authenticationHeaderValue.Parameter);
+                string[] credentials = Encoding.UTF8.GetString(bytes).Split(":");
+                string adminName = credentials[0];
+                string adminPass = credentials[1];
+                AdminModel admin = _context.Admins.Where(admin => admin.Admin_id == adminName && admin.Ad_Password == adminPass).FirstOrDefault();
+                
+                if(admin == null)
+                    return AuthenticateResult.Fail("Invalid username or password !");
+                else
+                {
+                    var claims = new[] { new Claim(ClaimTypes.Name, adminName) };
+                    var identity = new[] { new ClaimsIdentity(claims, Scheme.Name) };
+                    var principal =  new ClaimsPrincipal(identity);
+                    var ticket = new AuthenticationTicket (principal,Scheme.Name);
+                    return AuthenticateResult.Success(ticket);
+
+                }
+
+            }
+            catch (Exception)
+            {
+
+                return AuthenticateResult.Fail("Error has occured !");
+            }
+
+
 
         }
         public _AuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,

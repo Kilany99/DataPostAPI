@@ -1,9 +1,12 @@
+using AutoMapper;
 using CorePush.Apple;
 using CorePush.Google;
 using DataPostAPI.Handlers;
+using DataPostAPI.Helpers;
 using DataPostAPI.Models;
 using DataPostAPI.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,16 +17,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DataPostAPI
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
@@ -42,6 +48,9 @@ namespace DataPostAPI
             var appSettingsSection = configuration.GetSection("FcmNotification");
             services.Configure<FcmNotificationSetting>(appSettingsSection);
 
+            var appSettingsSection1 = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection1);
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -50,8 +59,48 @@ namespace DataPostAPI
             services.AddDbContext<ClientContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DevConnection")));
             services.AddCors();
-            services.AddAuthentication("Authentication")
-                .AddScheme<AuthenticationSchemeOptions, _AuthenticationHandler>("Authentication",null);
+            var appSettings = appSettingsSection1.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(x =>
+               {
+                   x.Events = new JwtBearerEvents
+                   {
+                       OnTokenValidated = context =>
+                       {
+                           var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                           var userId = int.Parse(context.Principal.Identity.Name);
+                           var user = userService.GetById(userId);
+                           if (user == null)
+                           {
+                            // return unauthorized if user no longer exists
+                            context.Fail("Unauthorized");
+                           }
+                           return Task.CompletedTask;
+                       }
+                   };
+                   x.RequireHttpsMetadata = false;
+                   x.SaveToken = true;
+                   x.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuerSigningKey = true,
+                       IssuerSigningKey = new SymmetricSecurityKey(key),
+                       ValidateIssuer = false,
+                       ValidateAudience = false
+                   };
+               });
+            services.AddScoped<IUserService, UserService>();
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
         }
 
