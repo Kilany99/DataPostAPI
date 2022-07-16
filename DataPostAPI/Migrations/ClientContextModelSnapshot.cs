@@ -110,12 +110,24 @@ namespace DataPostAPI.Migrations
                         .HasColumnType("varchar(8)");
 
                     b.Property<string>("DeviceToken")
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("varchar(MAX)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("varchar(16)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("ClientId");
 

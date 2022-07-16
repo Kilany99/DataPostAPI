@@ -28,6 +28,30 @@ namespace DataPostAPI.Controllers
         {
             _notificationService = notificationService;
         }
+        [HttpGet("data1/{id}")]
+        public async Task<ActionResult<TempPostedDataModel>> GetFromToken(string id)
+        {
+            List<string> values = GetValuesDB.GetDataFromToken(id);
+            TempPostedDataModel pd = new TempPostedDataModel();
+            pd.PostedDataId = Int32.Parse(values[0]);                                            //I don't need values[0] because it is the ID used by the database
+            pd.CrimeScreenshot = values[1];
+            pd.AnomalyDateTime = values[2];
+            pd.AnomalyType = values[3];
+            pd.ActionPriority = values[4];
+            pd.ZoneID = values[5];
+            pd.respone = "";
+            return pd;
+
+        }
+        [HttpGet("data2/{id}")]
+        public async Task<ActionResult<IdModel>> GetIdFromToken(string id)
+        {
+            int result = GetValuesDB.GetMaxPostedDataIdFromToken(id);
+            IdModel model =  new IdModel();
+            model.PostedDataId = result;
+            return model;
+
+        }
 
         // GET api/values
         [HttpGet]
@@ -37,6 +61,7 @@ namespace DataPostAPI.Controllers
             
             List<string> values = GetValuesDB.GetValuesFromDB();
             PostedDataModel pd = new PostedDataModel();
+            pd.PostedDataId = Int32.Parse(values[0]);
             pd.CrimeScreenshot = values[1];
             pd.AnomalyDateTime = values[2];
             pd.AnomalyType = values[3];
@@ -45,7 +70,7 @@ namespace DataPostAPI.Controllers
             return pd;
         }
 
-
+       
         // GET api/values/data/5
         [HttpGet("data/{id}")]
         public  ActionResult<PostedDataModel> Get(string id)
@@ -82,8 +107,9 @@ namespace DataPostAPI.Controllers
         [HttpPost]
         public async Task<string> Post([FromForm] string value, [FromForm] string dt, [FromForm] string zone, [FromForm] string anomalyType, [FromForm] string anomalyPriority)
         {
-                    //Anomaly data recive part:
-
+            //Anomaly data recive part:
+            if (anomalyType.Contains("Normal"))
+                return null;
             PostedDataModel pdm = new PostedDataModel();
             pdm.CrimeScreenshot = value;
             pdm.AnomalyDateTime = dt;
@@ -111,6 +137,13 @@ namespace DataPostAPI.Controllers
                 anomalyTypeNumber = 1;
             SendActionToESP send = new SendActionToESP();
             FirebaseResponse response = await send.SendActionTypeToESP(anomalyTypeNumber, pdm.ZoneID);
+
+            Models.Action action = new Models.Action();
+            action.ActionType = pdm.AnomalyType;
+            action.ClientID = pdm.ZoneID;
+            action.MCUID = "1";
+            action.ActionDateTime = DateTime.Parse(pdm.AnomalyDateTime);
+            PostValuesDB.PostActionToDB(action);
 
             return result;
         }

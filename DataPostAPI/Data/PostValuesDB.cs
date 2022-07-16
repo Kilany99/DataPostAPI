@@ -101,5 +101,53 @@ namespace DataPostAPI.Data
 
             }
         }
+
+        public static string PostActionToDB(Models.Action action)
+        {
+            string connetionString = null;
+            string sql = null;
+
+            // All the info required to reach your db. See connectionstrings.com
+            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
+
+            // Prepare a proper parameterized query 
+            sql = "insert into Action ([ActionType], [AnomalyDateTime] , [MCUID] , [ActionDateTime], [ClientId]) values(@first,@second,@third,@fourth,@fifth)";
+
+            // Create the connection (and be sure to dispose it at the end)
+            using (SqlConnection cnn = new SqlConnection(connetionString))
+            {
+                try
+                {
+                    cnn.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, cnn))
+                    {
+                        // Create and set the parameters values 
+                        cmd.Parameters.Add("@first", SqlDbType.NVarChar).Value = action.ActionType;
+                        cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = action.ActionDateTime;
+                        cmd.Parameters.Add("@third", SqlDbType.NVarChar).Value = action.MCUID;
+                        cmd.Parameters.Add("@fourth", SqlDbType.NVarChar).Value = action.ActionDateTime;
+                        cmd.Parameters.Add("@fifth", SqlDbType.NVarChar).Value = action.ClientID;
+
+                        // Let's ask the db to execute the query
+                        int rowsAdded = cmd.ExecuteNonQuery();
+                        if (rowsAdded > 0)
+                            return ("Row inserted!!");
+                        else
+                            // Well this should never really happen
+                            return ("No row inserted");
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // We should log the error somewhere, 
+                    // for this example let's just show a message
+                    return ("ERROR:" + ex.Message);
+                }
+
+            }
+        }
     }
+
+
 }

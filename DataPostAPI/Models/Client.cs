@@ -18,20 +18,25 @@ namespace DataPostAPI.Models
         [Column(TypeName = "varchar(15)")]
         [Display(Name = "Client Username")]
         [MaxLength(8)]
-        public string? ClientName { get; set; }
+        public string ClientName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(20)")]
         [Display(Name = "Client Password")]
         [MaxLength(16)]
-        public string? Password { get; set; }
+        public string Password { get; set; }
+
         [ForeignKey("Camera")]
         [Display(Name = "Zone Name")]
         [NotMapped]
         public int ZoneID { get; set; }
 
-        [Column(TypeName = "varchar(40)")]
+        [Column(TypeName = "varchar(MAX)")]
         public string? DeviceToken { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
     }
 }

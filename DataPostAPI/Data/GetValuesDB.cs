@@ -78,6 +78,9 @@ namespace DataPostAPI.Data
             }
 
         }
+
+
+
         public static List<PostedDataModel> GetAllValuesFromDB(string ClientDeviceToken)
         {
             int searchResultID = GetClientIDFromToken(ClientDeviceToken);
@@ -130,7 +133,7 @@ namespace DataPostAPI.Data
             }
 
         }
-        private static int GetClientIDFromToken(string clientToken)
+        public static int GetClientIDFromToken(string clientToken)
         {
             List<string> ValuesFromDB = new List<string>();
             string LocationqueryString = "SELECT * FROM Client WHERE DeviceToken = @clientToken);";
@@ -163,7 +166,79 @@ namespace DataPostAPI.Data
                 }
             }
         }
+
+
+        public static List<string> GetDataFromToken(string token)
+        {
+            List<string> ValuesFromDB = new List<string>();
+            string deviceToken = token;
+            string LocationqueryString = "SELECT * FROM PostedData WHERE " +
+                "PostedDataId=(SELECT max(PostedDataId) FROM PostedData WHERE CameraZoneID=(SELECT CameraZoneID FROM Client WHERE DeviceToken = @deviceToken));";
+
+            using (SqlConnection Locationconnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand command = new SqlCommand(LocationqueryString, Locationconnection);
+                try
+                {
+                    Locationconnection.Open();
+                    command.Parameters.Add("deviceToken", SqlDbType.VarChar).Value = deviceToken;
+                    SqlDataReader Locationreader = command.ExecuteReader();
+                    while (Locationreader.Read())
+                    {
+                        for (int i = 0; i <= Locationreader.FieldCount - 1; i++)
+                        {
+                            ValuesFromDB.Add(Locationreader[i].ToString());
+                        }
+                    }
+                    Locationreader.Close();
+                    return ValuesFromDB;
+                }
+                catch (Exception ex)
+                {
+                    List<string> res = new List<string>();
+                    Console.WriteLine(ex.ToString());
+                    res[0] = ex.ToString();
+                    return res;
+
+                }
+            }
+        }
+            
+        public static int GetMaxPostedDataIdFromToken(string token)
+        {
+            List<string> ValuesFromDB = new List<string>();
+            string deviceToken = token;
+            string LocationqueryString = "SELECT PostedDataId FROM PostedData WHERE " +
+                "PostedDataId=(SELECT max(PostedDataId) FROM PostedData WHERE CameraZoneID=(SELECT CameraZoneID FROM Client WHERE DeviceToken = @deviceToken));";
+
+            using (SqlConnection Locationconnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand command = new SqlCommand(LocationqueryString, Locationconnection);
+                try
+                {
+                    Locationconnection.Open();
+                    command.Parameters.Add("deviceToken", SqlDbType.VarChar).Value = deviceToken;
+                    SqlDataReader Locationreader = command.ExecuteReader();
+                    while (Locationreader.Read())
+                    {
+                        for (int i = 0; i <= Locationreader.FieldCount - 1; i++)
+                        {
+                            ValuesFromDB.Add(Locationreader[i].ToString());
+                        }
+                    }
+                    Locationreader.Close();
+                    return Int32.Parse(ValuesFromDB[0]);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+
+                }
+            }
+        }
+        
     }
+}
 
     
-}
+

@@ -48,8 +48,12 @@ namespace DataPostAPI.Migrations
                     ClientId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientName = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: false),
-                    DeviceToken = table.Column<string>(type: "varchar(40)", nullable: true)
+                    DeviceToken = table.Column<string>(type: "varchar(MAX)", nullable: true),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {

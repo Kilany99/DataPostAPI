@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataPostAPI.Migrations
 {
     [DbContext(typeof(ClientContext))]
-    [Migration("20220714002758_asd")]
+    [Migration("20220716162931_asd")]
     partial class asd
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -112,12 +112,24 @@ namespace DataPostAPI.Migrations
                         .HasColumnType("varchar(8)");
 
                     b.Property<string>("DeviceToken")
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("varchar(MAX)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("varchar(16)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("ClientId");
 

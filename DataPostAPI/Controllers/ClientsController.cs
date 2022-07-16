@@ -1,113 +1,133 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DataPostAPI.Models;
-using DataPostAPI.Data;
+using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using DataPostAPI.Services;
+using DataPostAPI.Helpers;
+using DataPostAPI.Models;
 
 namespace DataPostAPI.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private readonly ClientContext _context;
+        private IClientService _clientService;
+        private IMapper _mapper;
+        private readonly AppSettings _appSettings;
 
-        public ClientsController(ClientContext context)
+        public ClientsController(
+            IClientService clientService,
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
-            _context = context;
+            _clientService = clientService;
+            _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
-        // GET: api/Clients
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClient()
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody] AuthenticateModel model)
         {
-            return await _context.Client.ToListAsync();
-        }
-
-        // GET: api/Clients/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Client>> GetClient(int id)
-        {
-            var client = await _context.Client.FindAsync(id);
+            var client = _clientService.Authenticate(model.Username, model.Password);
 
             if (client == null)
-            {
-                return NotFound();
-            }
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            return client;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, client.ClientId.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            // return basic user info and authentication token
+            return Ok(new
+            {
+                Id = client.ClientId,
+                Username = client.ClientName,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                ZoneId = client.ZoneID,
+                Token = tokenString
+            });
         }
 
-        // PUT: api/Clients/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutClient(int id, Client client)
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterModelClient model)
         {
-            if (id != client.ClientId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(client).State = EntityState.Modified;
+            // map model to entity
+            var client = _mapper.Map<Client>(model);
 
             try
             {
-                await _context.SaveChangesAsync();
+                // create client
+                _clientService.Create(client, model.Password);
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (AppException ex)
             {
-                if (!ClientExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
             }
-
-            return NoContent();
         }
 
-        // POST: api/Clients
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<string> PostClient(Client client)
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            Client clientInfo = new Client();
-            clientInfo.ClientName = client.ClientName;
-            clientInfo.Password = client.Password;
-            clientInfo.ZoneID = client.ZoneID;
-            clientInfo.DeviceToken = "";
-            return PostValuesDB.PostClientToDB(clientInfo);
-
+            var clients = _clientService.GetAll();
+            var model = _mapper.Map<IList<ClientModel>>(clients);
+            return Ok(model);
         }
 
-        // DELETE: api/Clients/5
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var client = _clientService.GetById(id);
+            var model = _mapper.Map<ClientModel>(client);
+            return Ok(model);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] UpdateModelClient model)
+        {
+            // map model to entity and set id
+            var client = _mapper.Map<Client>(model);
+            client.ClientId = id;
+
+            try
+            {
+                // update user 
+                _clientService.Update(client, model.Password);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClient(int id)
+        public IActionResult Delete(int id)
         {
-            var client = await _context.Client.FindAsync(id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            _context.Client.Remove(client);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ClientExists(int id)
-        {
-            return _context.Client.Any(e => e.ClientId == id);
+            _clientService.Delete(id);
+            return Ok();
         }
     }
 }

@@ -10,6 +10,9 @@ namespace DataPostAPI.Helpers
             CreateMap<User, UserModel>();
             CreateMap<RegisterModel, User>();
             CreateMap<UpdateModel, User>();
+            CreateMap<Client, ClientModel>();
+            CreateMap<RegisterModelClient, Client>();
+            CreateMap<UpdateModelClient, Client>();
         }
     }
 

@@ -94,6 +94,7 @@ namespace DataPostAPI
                    };
                });
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IClientService, ClientService>();
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new AutoMapperProfile());
