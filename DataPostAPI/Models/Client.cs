@@ -17,7 +17,6 @@ namespace DataPostAPI.Models
         [Required]
         [Column(TypeName = "varchar(15)")]
         [Display(Name = "Client Username")]
-        [MaxLength(8)]
         public string ClientName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -29,9 +28,8 @@ namespace DataPostAPI.Models
         public string Password { get; set; }
 
         [ForeignKey("Camera")]
-        [Display(Name = "Zone Name")]
-        [NotMapped]
-        public int ZoneID { get; set; }
+        [Display(Name = "Zone Id")]
+        public int ZoneId { get; set; }
 
         [Column(TypeName = "varchar(MAX)")]
         public string? DeviceToken { get; set; }

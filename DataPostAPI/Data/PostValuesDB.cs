@@ -16,10 +16,10 @@ namespace DataPostAPI.Data
             string sql = null;
 
             // All the info required to reach your db. See connectionstrings.com
-            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
+            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=newDB;Integrated Security=True;";
 
             // Prepare a proper parameterized query 
-            sql = "insert into PostedData ([CrimeScreenshot], [AnomalyDateTime] , [ActionType] , [ActionPriority], [CameraZoneID]) values(@first,@second,@third,@fourth,@fifth)";
+            sql = "insert into postedDatas ([CrimeScreenshot], [AnomalyDatetime] , [AnomalyType] , [ActionPriority], [ZoneId]) values(@first,@second,@third,@fourth,@fifth)";
 
             // Create the connection (and be sure to dispose it at the end)
             using (SqlConnection cnn = new SqlConnection(connetionString))
@@ -31,10 +31,10 @@ namespace DataPostAPI.Data
                     {
                         // Create and set the parameters values 
                         cmd.Parameters.Add("@first", SqlDbType.NVarChar).Value = postedData.CrimeScreenshot;
-                        cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = postedData.AnomalyDateTime;
+                        cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = postedData.AnomalyDatetime;
                         cmd.Parameters.Add("@third", SqlDbType.NVarChar).Value = postedData.AnomalyType;
                         cmd.Parameters.Add("@fourth", SqlDbType.NVarChar).Value = postedData.ActionPriority;
-                        cmd.Parameters.Add("@fifth", SqlDbType.NVarChar).Value = postedData.ZoneID;
+                        cmd.Parameters.Add("@fifth", SqlDbType.NVarChar).Value = postedData.ZoneId;
 
                         // Let's ask the db to execute the query
                         int rowsAdded = cmd.ExecuteNonQuery();
@@ -63,10 +63,10 @@ namespace DataPostAPI.Data
             string sql = null;
 
             // All the info required to reach your db. See connectionstrings.com
-            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
+            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=newDB;Integrated Security=True;";
 
             // Prepare a proper parameterized query 
-            sql = "insert into Client ([ClientName], [Password] , [CameraZoneID] , [DeviceToken] ) values(@first,@second,@third,@fourth)";
+            sql = "insert into Client ([ClientName], [Password] , [ZoneId] , [DeviceToken] ) values(@first,@second,@third,@fourth)";
 
             // Create the connection (and be sure to dispose it at the end)
             using (SqlConnection cnn = new SqlConnection(connetionString))
@@ -79,7 +79,7 @@ namespace DataPostAPI.Data
                         // Create and set the parameters values 
                         cmd.Parameters.Add("@first", SqlDbType.NVarChar).Value = client.ClientName;
                         cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = client.Password;
-                        cmd.Parameters.Add("@third", SqlDbType.Int).Value = client.ZoneID;
+                        cmd.Parameters.Add("@third", SqlDbType.Int).Value = client.ZoneId;
                         cmd.Parameters.Add("@fourth", SqlDbType.NVarChar).Value = client.DeviceToken;
 
                         // Let's ask the db to execute the query
@@ -111,7 +111,7 @@ namespace DataPostAPI.Data
             connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
 
             // Prepare a proper parameterized query 
-            sql = "insert into Action ([ActionType], [AnomalyDateTime] , [MCUID] , [ActionDateTime], [ClientId]) values(@first,@second,@third,@fourth,@fifth)";
+            sql = "insert into Action ([ActionType] , [McuId] , [ActionDatetime], [ClientId]) values(@first,@second,@third,@fourth)";
 
             // Create the connection (and be sure to dispose it at the end)
             using (SqlConnection cnn = new SqlConnection(connetionString))
@@ -123,10 +123,9 @@ namespace DataPostAPI.Data
                     {
                         // Create and set the parameters values 
                         cmd.Parameters.Add("@first", SqlDbType.NVarChar).Value = action.ActionType;
-                        cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = action.ActionDateTime;
-                        cmd.Parameters.Add("@third", SqlDbType.NVarChar).Value = action.MCUID;
-                        cmd.Parameters.Add("@fourth", SqlDbType.NVarChar).Value = action.ActionDateTime;
-                        cmd.Parameters.Add("@fifth", SqlDbType.NVarChar).Value = action.ClientID;
+                        cmd.Parameters.Add("@second", SqlDbType.NVarChar).Value = action.McuId;
+                        cmd.Parameters.Add("@third", SqlDbType.NVarChar).Value = action.ActionDatetime;
+                        cmd.Parameters.Add("@fourth", SqlDbType.NVarChar).Value = action.ClientId;
 
                         // Let's ask the db to execute the query
                         int rowsAdded = cmd.ExecuteNonQuery();

@@ -13,7 +13,7 @@ namespace DataPostAPI.Models
 
         [Key]
         [Display(Name = "camera zone ID")]
-        public int CameraZoneID { get; set; }
+        public int CameraZoneid { get; set; }
 
         [Required]
         [Display(Name = "Zone Priority")]

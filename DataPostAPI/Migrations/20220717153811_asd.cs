@@ -31,14 +31,14 @@ namespace DataPostAPI.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    CameraZoneID = table.Column<int>(type: "int", nullable: false)
+                    CameraZoneid = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ZonePriority = table.Column<int>(type: "int", nullable: false),
                     ZoneDescription = table.Column<string>(type: "varchar(150)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Camera", x => x.CameraZoneID);
+                    table.PrimaryKey("PK_Camera", x => x.CameraZoneid);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,10 +47,11 @@ namespace DataPostAPI.Migrations
                 {
                     ClientId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ClientName = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false),
+                    ClientName = table.Column<string>(type: "varchar(15)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: false),
+                    ZoneId = table.Column<int>(type: "int", nullable: false),
                     DeviceToken = table.Column<string>(type: "varchar(MAX)", nullable: true),
                     PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
@@ -64,17 +65,18 @@ namespace DataPostAPI.Migrations
                 name: "postedDatas",
                 columns: table => new
                 {
-                    PostedDataId = table.Column<int>(type: "int", nullable: false)
+                    PostedDataid = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CrimeScreenshot = table.Column<string>(type: "varchar(300)", nullable: false),
-                    AnomalyDateTime = table.Column<string>(type: "varchar(150)", nullable: false),
-                    AnomalyType = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
-                    ActionPriority = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    respone = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CrimeScreenshot = table.Column<string>(type: "varchar(MAX)", nullable: false),
+                    AnomalyDatetime = table.Column<string>(type: "varchar(150)", nullable: false),
+                    AnomalyType = table.Column<string>(type: "varchar(150)", nullable: false),
+                    ActionPriority = table.Column<string>(type: "varchar(15)", nullable: false),
+                    ZoneId = table.Column<int>(type: "int", nullable: false),
+                    Response = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_postedDatas", x => x.PostedDataId);
+                    table.PrimaryKey("PK_postedDatas", x => x.PostedDataid);
                 });
 
             migrationBuilder.CreateTable(
@@ -99,21 +101,22 @@ namespace DataPostAPI.Migrations
                 schema: "dbo",
                 columns: table => new
                 {
-                    ActionID = table.Column<int>(type: "int", nullable: false)
+                    ActionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ActionType = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
-                    MCUID = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false),
-                    ActionDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClientId = table.Column<int>(type: "int", nullable: true)
+                    McuId = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false),
+                    ActionDatetime = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClientId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Action", x => x.ActionID);
+                    table.PrimaryKey("PK_Action", x => x.ActionId);
                     table.ForeignKey(
                         name: "FK_Action_Client_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Client",
-                        principalColumn: "ClientId");
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

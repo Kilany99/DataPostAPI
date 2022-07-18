@@ -24,22 +24,25 @@ namespace DataPostAPI.Controllers
     {
 
         protected readonly INotificationService _notificationService;
-        public ValuesController(INotificationService notificationService)
+        private ClientContext _context;
+
+        public ValuesController(INotificationService notificationService, ClientContext context)
         {
             _notificationService = notificationService;
+            _context = context;
         }
         [HttpGet("data1/{id}")]
-        public async Task<ActionResult<TempPostedDataModel>> GetFromToken(string id)
+        public async Task<ActionResult<PostedDataModel>> GetFromToken(string id)
         {
             List<string> values = GetValuesDB.GetDataFromToken(id);
-            TempPostedDataModel pd = new TempPostedDataModel();
-            pd.PostedDataId = Int32.Parse(values[0]);                                            //I don't need values[0] because it is the ID used by the database
+            PostedDataModel pd = new PostedDataModel();
+            pd.PostedDataid = Int32.Parse(values[0]);                                            //I don't need values[0] because it is the ID used by the database
             pd.CrimeScreenshot = values[1];
-            pd.AnomalyDateTime = values[2];
+            pd.AnomalyDatetime = values[2];
             pd.AnomalyType = values[3];
             pd.ActionPriority = values[4];
-            pd.ZoneID = values[5];
-            pd.respone = "";
+            pd.ZoneId = Int32.Parse(values[5]);
+            pd.Response = "";
             return pd;
 
         }
@@ -56,21 +59,13 @@ namespace DataPostAPI.Controllers
         // GET api/values
         [HttpGet]
         [Route("data")]
-        public async Task<ActionResult<PostedDataModel>> Get()
+        public IEnumerable<PostedDataModel> GetAll()
         {
-            
-            List<string> values = GetValuesDB.GetValuesFromDB();
-            PostedDataModel pd = new PostedDataModel();
-            pd.PostedDataId = Int32.Parse(values[0]);
-            pd.CrimeScreenshot = values[1];
-            pd.AnomalyDateTime = values[2];
-            pd.AnomalyType = values[3];
-            pd.ActionPriority =values[4];
-            pd.ZoneID = Int32.Parse(values[5]);
-            return pd;
+            return _context.postedDatas;
+
         }
 
-       
+
         // GET api/values/data/5
         [HttpGet("data/{id}")]
         public  ActionResult<PostedDataModel> Get(string id)
@@ -92,13 +87,13 @@ namespace DataPostAPI.Controllers
             Console.WriteLine(ID.ToString());
             List<string> values = GetValuesDB.GetValuesFromDB(ID);
             PostedDataModel pd = new PostedDataModel();
-            pd.PostedDataId = 0;                                            //I don't need values[0] because it is the ID used by the database
+            pd.PostedDataid = 0;                                            //I don't need values[0] because it is the ID used by the database
             pd.CrimeScreenshot = values[1];
-            pd.AnomalyDateTime = values[2];
+            pd.AnomalyDatetime = values[2];
             pd.AnomalyType = values[3];
             pd.ActionPriority = values[4];
-            pd.ZoneID = Int32.Parse(values[5]);
-            pd.respone = "";
+            pd.ZoneId = Int32.Parse(values[5]);
+            pd.Response = "";
             return pd;
         }
 
@@ -112,8 +107,8 @@ namespace DataPostAPI.Controllers
                 return null;
             PostedDataModel pdm = new PostedDataModel();
             pdm.CrimeScreenshot = value;
-            pdm.AnomalyDateTime = dt;
-            pdm.ZoneID = Int32.Parse(zone);
+            pdm.AnomalyDatetime = dt;
+            pdm.ZoneId = Int32.Parse(zone);
             pdm.AnomalyType = anomalyType;
             pdm.ActionPriority = anomalyPriority;
             string result = PostValuesDB.PostValuesToDB(pdm);
@@ -136,15 +131,15 @@ namespace DataPostAPI.Controllers
             else
                 anomalyTypeNumber = 1;
             SendActionToESP send = new SendActionToESP();
-            FirebaseResponse response = await send.SendActionTypeToESP(anomalyTypeNumber, pdm.ZoneID);
+            FirebaseResponse response = await send.SendActionTypeToESP(anomalyTypeNumber, pdm.ZoneId);
 
             Models.Action action = new Models.Action();
             action.ActionType = pdm.AnomalyType;
-            action.ClientID = pdm.ZoneID;
-            action.MCUID = "1";
-            action.ActionDateTime = DateTime.Parse(pdm.AnomalyDateTime);
-            PostValuesDB.PostActionToDB(action);
-
+            action.ClientId = pdm.ZoneId;
+            action.McuId = "1";
+            action.ActionDatetime = pdm.AnomalyDatetime;
+            string res = PostValuesDB.PostActionToDB(action);
+            Console.WriteLine(res);
             return result;
         }
 

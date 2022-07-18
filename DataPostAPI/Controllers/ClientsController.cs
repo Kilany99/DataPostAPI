@@ -62,7 +62,7 @@ namespace DataPostAPI.Controllers
                 Username = client.ClientName,
                 FirstName = client.FirstName,
                 LastName = client.LastName,
-                ZoneId = client.ZoneID,
+                ZoneId = client.ZoneId,
                 Token = tokenString
             });
         }

@@ -16,7 +16,7 @@ namespace DataPostAPI.Data
             string connetionString = null;
             string sql = null;
             // All the info required to reach your db. See connectionstrings.com
-            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=NewDB;Integrated Security=True;";
+            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=newDB;Integrated Security=True;";
 
             // Prepare a proper parameterized query 
             sql = "UPDATE Client SET DeviceToken = @value WHERE ClientName = @id ";

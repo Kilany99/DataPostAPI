@@ -10,14 +10,14 @@ namespace DataPostAPI.Data
 {
     public class GetValuesDB
     {
-        private readonly static string ConnectionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
+        private readonly static string ConnectionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=newDB;Integrated Security=True;";
 
         public static List<string> GetValuesFromDB(int zoneID)
         {
             List<string> ValuesFromDB = new List<string>();
             string zoneId = zoneID.ToString();
-            string LocationqueryString = "SELECT * FROM PostedData WHERE " +
-                "PostedDataId=(SELECT max(PostedDataId) FROM PostedData WHERE CameraZoneID=@zoneId);";
+            string LocationqueryString = "SELECT * FROM postedDatas WHERE " +
+                "PostedDataid=(SELECT max(PostedDataid) FROM postedDatas WHERE ZoneId=@zoneId);";
             using (SqlConnection Locationconnection = new SqlConnection(ConnectionString))
             {
                 SqlCommand command = new SqlCommand(LocationqueryString, Locationconnection);
@@ -51,7 +51,7 @@ namespace DataPostAPI.Data
         public static List<string> GetValuesFromDB()
         {
             List<string> ValuesFromDB = new List<string>();
-            string LocationqueryString = "SELECT * FROM PostedData WHERE PostedDataId=(SELECT max(PostedDataId) FROM PostedData);";
+            string LocationqueryString = "SELECT * FROM postedDatas WHERE PostedDataid=(SELECT max(PostedDataid) FROM postedDatas);";
             using (SqlConnection Locationconnection =
                                      new SqlConnection(ConnectionString))
             {
@@ -112,12 +112,12 @@ namespace DataPostAPI.Data
                     {
                         if(i%6 ==0)
                         {
-                            pdm.PostedDataId= Int32.Parse(ValuesFromDB[i]);
+                            pdm.PostedDataid= Int32.Parse(ValuesFromDB[i]);
                             pdm.CrimeScreenshot = ValuesFromDB[i + 1];
-                            pdm.AnomalyDateTime = ValuesFromDB[i + 2];
+                            pdm.AnomalyDatetime = ValuesFromDB[i + 2];
                             pdm.AnomalyType = ValuesFromDB[i + 3];
                             pdm.ActionPriority = ValuesFromDB[i + 4];
-                            pdm.ZoneID = Int32.Parse(ValuesFromDB[i + 5]);
+                            pdm.ZoneId = Int32.Parse(ValuesFromDB[i + 5]);
                             results[i] = pdm;
 
 
@@ -172,8 +172,8 @@ namespace DataPostAPI.Data
         {
             List<string> ValuesFromDB = new List<string>();
             string deviceToken = token;
-            string LocationqueryString = "SELECT * FROM PostedData WHERE " +
-                "PostedDataId=(SELECT max(PostedDataId) FROM PostedData WHERE CameraZoneID=(SELECT CameraZoneID FROM Client WHERE DeviceToken = @deviceToken));";
+            string LocationqueryString = "SELECT * FROM postedDatas WHERE " +
+                "PostedDataid=(SELECT max(PostedDataid) FROM postedDatas WHERE ZoneId=(SELECT ZoneId FROM Client WHERE DeviceToken = @deviceToken));";
 
             using (SqlConnection Locationconnection = new SqlConnection(ConnectionString))
             {
@@ -208,8 +208,8 @@ namespace DataPostAPI.Data
         {
             List<string> ValuesFromDB = new List<string>();
             string deviceToken = token;
-            string LocationqueryString = "SELECT PostedDataId FROM PostedData WHERE " +
-                "PostedDataId=(SELECT max(PostedDataId) FROM PostedData WHERE CameraZoneID=(SELECT CameraZoneID FROM Client WHERE DeviceToken = @deviceToken));";
+            string LocationqueryString = "SELECT PostedDataid FROM postedDatas WHERE " +
+                "PostedDataid=(SELECT max(PostedDataid) FROM postedDatas WHERE Zoneid=(SELECT Zoneid FROM Client WHERE DeviceToken = @deviceToken));";
 
             using (SqlConnection Locationconnection = new SqlConnection(ConnectionString))
             {

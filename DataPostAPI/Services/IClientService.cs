@@ -60,7 +60,7 @@ namespace DataPostAPI.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
 
-            if (string.IsNullOrWhiteSpace(client.ZoneID.ToString()))
+            if (string.IsNullOrWhiteSpace(client.ZoneId.ToString()))
                 throw new AppException("Zone number is required");
 
             if (_context.Client.Any(x => x.ClientName == client.ClientName))
@@ -102,8 +102,8 @@ namespace DataPostAPI.Services
             if (!string.IsNullOrWhiteSpace(userParam.LastName))
                 client.LastName = userParam.LastName;
 
-            if (!string.IsNullOrWhiteSpace(userParam.ZoneID.ToString()))
-                client.ZoneID = userParam.ZoneID;
+            if (!string.IsNullOrWhiteSpace(userParam.ZoneId.ToString()))
+                client.ZoneId = userParam.ZoneId;
 
             // update password if provided
             if (!string.IsNullOrWhiteSpace(password))

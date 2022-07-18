@@ -17,8 +17,8 @@ namespace DataPostAPI.Data
             string connetionString = null;
             string sql = null;
             string zoneID = zoneId.ToString();
-            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=RAISDB;Integrated Security=True;";
-            sql = "SELECT * FROM Client WHERE CameraZoneID = @zoneID";
+            connetionString = @"Data Source=DESKTOP-P944USQ\SQLEXPRESS01;Initial Catalog=newDB;Integrated Security=True;";
+            sql = "SELECT * FROM Client WHERE ZoneId = @zoneID";
             List<string> deviceToken = new List<string>();
 
             using (SqlConnection conn = new SqlConnection(connetionString) )
@@ -49,7 +49,7 @@ namespace DataPostAPI.Data
                     return nm;
                 }
                 NotificationModel notificationModel = new NotificationModel();
-                notificationModel.DeviceId = deviceToken[3];                   //deviceToken is in the 4th coulmn of the table
+                notificationModel.DeviceId = deviceToken[6];                   //deviceToken is in the 4th coulmn of the table
                 notificationModel.IsAndroiodDevice = true;
                 notificationModel.Body = "Anomaly Type :" + anomalyType;
                 notificationModel.Title = "Anomaly Detected!";

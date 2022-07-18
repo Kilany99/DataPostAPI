@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataPostAPI.Migrations
 {
     [DbContext(typeof(ClientContext))]
-    [Migration("20220716162931_asd")]
+    [Migration("20220717153811_asd")]
     partial class asd
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,30 +26,30 @@ namespace DataPostAPI.Migrations
 
             modelBuilder.Entity("DataPostAPI.Models.Action", b =>
                 {
-                    b.Property<int>("ActionID")
+                    b.Property<int>("ActionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionId"), 1L, 1);
 
-                    b.Property<DateTime?>("ActionDateTime")
+                    b.Property<string>("ActionDatetime")
                         .IsRequired()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ActionType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<int?>("ClientId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MCUID")
+                    b.Property<string>("McuId")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("varchar(8)");
 
-                    b.HasKey("ActionID");
+                    b.HasKey("ActionId");
 
                     b.HasIndex("ClientId");
 
@@ -80,11 +80,11 @@ namespace DataPostAPI.Migrations
 
             modelBuilder.Entity("DataPostAPI.Models.Camera", b =>
                 {
-                    b.Property<int>("CameraZoneID")
+                    b.Property<int>("CameraZoneid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CameraZoneID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CameraZoneid"), 1L, 1);
 
                     b.Property<string>("ZoneDescription")
                         .IsRequired()
@@ -93,7 +93,7 @@ namespace DataPostAPI.Migrations
                     b.Property<int>("ZonePriority")
                         .HasColumnType("int");
 
-                    b.HasKey("CameraZoneID");
+                    b.HasKey("CameraZoneid");
 
                     b.ToTable("Camera", "dbo");
                 });
@@ -108,8 +108,7 @@ namespace DataPostAPI.Migrations
 
                     b.Property<string>("ClientName")
                         .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("DeviceToken")
                         .HasColumnType("varchar(MAX)");
@@ -131,6 +130,9 @@ namespace DataPostAPI.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("ZoneId")
+                        .HasColumnType("int");
+
                     b.HasKey("ClientId");
 
                     b.ToTable("Client");
@@ -138,34 +140,35 @@ namespace DataPostAPI.Migrations
 
             modelBuilder.Entity("DataPostAPI.Models.PostedDataModel", b =>
                 {
-                    b.Property<int>("PostedDataId")
+                    b.Property<int>("PostedDataid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostedDataId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostedDataid"), 1L, 1);
 
                     b.Property<string>("ActionPriority")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("varchar(15)");
 
-                    b.Property<string>("AnomalyDateTime")
+                    b.Property<string>("AnomalyDatetime")
                         .IsRequired()
                         .HasColumnType("varchar(150)");
 
                     b.Property<string>("AnomalyType")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(150)");
 
                     b.Property<string>("CrimeScreenshot")
                         .IsRequired()
-                        .HasColumnType("varchar(300)");
+                        .HasColumnType("varchar(MAX)");
 
-                    b.Property<string>("respone")
+                    b.Property<string>("Response")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PostedDataId");
+                    b.Property<int>("ZoneId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PostedDataid");
 
                     b.ToTable("postedDatas");
                 });
@@ -202,7 +205,9 @@ namespace DataPostAPI.Migrations
                 {
                     b.HasOne("DataPostAPI.Models.Client", "client")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("client");
                 });

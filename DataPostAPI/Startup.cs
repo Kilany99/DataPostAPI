@@ -95,6 +95,8 @@ namespace DataPostAPI
                });
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<ICameraService, CameraService>();
+
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new AutoMapperProfile());

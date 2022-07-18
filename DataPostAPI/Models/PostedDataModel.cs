@@ -12,35 +12,32 @@ namespace DataPostAPI.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Display(Name = "Posted Data Id")]
-        public int PostedDataId { get; set; }
+        public int PostedDataid { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(300)")]
+        [Column(TypeName = "varchar(MAX)")]
         [Display(Name = "Anomaly Screenshot")]
-        public string? CrimeScreenshot { get; set; }
+        public string CrimeScreenshot { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(150)")]
         [Display(Name = "Anomaly Date and Time")]
-        public string? AnomalyDateTime { get; set; }
+        public string AnomalyDatetime { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(150)")]
         [Display(Name = "Anomaly type")]
-        [MaxLength(100)]
-        public string? AnomalyType { get; set; }
+        public string AnomalyType { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(15)")]
         [Display(Name = "Action Priority")]
-        [MaxLength(10)]
-        public string? ActionPriority { get; set; }
+        public string ActionPriority { get; set; }
 
         [ForeignKey("Camera")]
         [Display(Name = "Zone ID")]
-        [NotMapped]
-        public int ZoneID { get; set; }
+        public int ZoneId { get; set; }
         
-        public string respone { get; set; }
+        public string Response { get; set; }
     }
 }
