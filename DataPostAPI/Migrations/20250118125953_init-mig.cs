@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataPostAPI.Migrations
 {
-    public partial class asd : Migration
+    public partial class initmig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

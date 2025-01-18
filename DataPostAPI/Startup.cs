@@ -1,9 +1,9 @@
 using AutoMapper;
 using CorePush.Apple;
 using CorePush.Google;
+using DataPostAPI.Data;
 using DataPostAPI.Handlers;
 using DataPostAPI.Helpers;
-using DataPostAPI.Models;
 using DataPostAPI.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore.Design;
 namespace DataPostAPI
 {
     public class Startup
@@ -43,12 +43,16 @@ namespace DataPostAPI
             services.AddTransient<INotificationService, NotificationService>();
             services.AddHttpClient<FcmSender>();
             services.AddHttpClient<ApnSender>();
+            services.AddSingleton<AnomalyDetectionSystem>();
+            services.AddScoped<SecuritySystem>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             // Configure strongly typed settings objects
             var appSettingsSection = configuration.GetSection("FcmNotification");
             services.Configure<FcmNotificationSetting>(appSettingsSection);
 
             var appSettingsSection1 = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection1);
             services.Configure<AppSettings>(appSettingsSection1);
 
             services.AddControllers();

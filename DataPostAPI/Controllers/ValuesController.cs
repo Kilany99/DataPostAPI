@@ -35,15 +35,16 @@ namespace DataPostAPI.Controllers
         public async Task<ActionResult<PostedDataModel>> GetFromToken(string id)
         {
             List<string> values = GetValuesDB.GetDataFromToken(id);
-            PostedDataModel pd = new PostedDataModel();
-            pd.PostedDataid = Int32.Parse(values[0]);                                            //I don't need values[0] because it is the ID used by the database
-            pd.CrimeScreenshot = values[1];
-            pd.AnomalyDatetime = values[2];
-            pd.AnomalyType = values[3];
-            pd.ActionPriority = values[4];
-            pd.ZoneId = Int32.Parse(values[5]);
-            pd.Response = "";
-            return pd;
+            return new PostedDataModel {
+                PostedDataid = Int32.Parse(values[0]),                                        //I don't need values[0] because it is the ID used by the database
+                CrimeScreenshot = values[1],
+                AnomalyDatetime = values[2],
+                AnomalyType = values[3],
+                ActionPriority = values[4],
+                ZoneId = Int32.Parse(values[5]),
+                Response = ""
+            };
+
 
         }
         [HttpGet("data2/{id}")]

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient; // Updated namespace
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,9 +10,7 @@ namespace DataPostAPI.Data
 {
     public class SendNotification
     {
-       
-
-        public static  NotificationModel GetDeviceIDFromDB(int zoneId,string anomalyType)
+        public static NotificationModel GetDeviceIDFromDB(int zoneId, string anomalyType)
         {
             string connetionString = null;
             string sql = null;
@@ -21,12 +19,12 @@ namespace DataPostAPI.Data
             sql = "SELECT * FROM Client WHERE ZoneId = @zoneID";
             List<string> deviceToken = new List<string>();
 
-            using (SqlConnection conn = new SqlConnection(connetionString) )
+            using (SqlConnection conn = new SqlConnection(connetionString))
             {
                 try
                 {
                     conn.Open();
-                    using (SqlCommand cmd = new SqlCommand(sql,conn))
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.Add("zoneID", SqlDbType.VarChar).Value = zoneID;
                         SqlDataReader Locationreader = cmd.ExecuteReader();
@@ -38,25 +36,21 @@ namespace DataPostAPI.Data
                             }
                         }
                         conn.Close();
-
                     }
-
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     NotificationModel nm = new NotificationModel();
                     nm.DeviceId = ex.ToString();
                     return nm;
                 }
                 NotificationModel notificationModel = new NotificationModel();
-                notificationModel.DeviceId = deviceToken[6];                   //deviceToken is in the 4th coulmn of the table
+                notificationModel.DeviceId = deviceToken[6]; // deviceToken is in the 4th column of the table
                 notificationModel.IsAndroiodDevice = true;
                 notificationModel.Body = "Anomaly Type :" + anomalyType;
                 notificationModel.Title = "Anomaly Detected!";
                 return notificationModel;
-              
             }
-
         }
     }
 }
