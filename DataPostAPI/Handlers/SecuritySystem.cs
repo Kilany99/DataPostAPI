@@ -1,4 +1,5 @@
 ﻿using DataPostAPI.Enums;
+using DataPostAPI.Models;
 using DataPostAPI.Services;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -11,6 +12,10 @@ namespace DataPostAPI.Handlers
         void HandleAlarm(AnomalyEvent anomalyEvent);
         void HandleDoorLock(AnomalyEvent anomalyEvent);
         Task NotifySecurityGuard(AnomalyEvent anomalyEvent);
+        Task LockdownFacility();
+        Task TriggerAlarm();
+        Task LockSpecificZone(string CameraId);
+        Task IncreaseSurveillance(string CameraId);
     }
     public class SecuritySystem : ISecuritySystem
     {
@@ -37,10 +42,23 @@ namespace DataPostAPI.Handlers
 
         public async Task NotifySecurityGuard(AnomalyEvent anomalyEvent)
         {
-            await _notificationService.SendNotification(
-                "Security Guard",
-                $"Anomaly detected: {anomalyEvent.AnomalyType} at {anomalyEvent.Timestamp}"
-            );
+            var model = Data.SendNotification.GetDeviceIDFromDB(anomalyEvent.ZoneId, anomalyEvent.AnomalyType);
+            await _notificationService.SendNotification(model);
         }
+        public async Task LockdownFacility()
+        {
+            throw new System.NotImplementedException();
+        }
+        public async Task TriggerAlarm()
+        {
+            throw new System.NotImplementedException();
+        }
+        public async Task LockSpecificZone(string CameraId)
+        {
+            throw new System.NotImplementedException();
+        }
+        public async Task IncreaseSurveillance(string CameraId)
+        {  throw new System.NotImplementedException(); }
+
     }
 }

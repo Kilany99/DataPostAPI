@@ -1,5 +1,6 @@
 ﻿using DataPostAPI.Enums;
 using DataPostAPI.Handlers;
+using DataPostAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DataPostAPI.Controllers
@@ -30,7 +31,11 @@ namespace DataPostAPI.Controllers
                         _securitySystem.HandleAlarm(anomalyEvent);
                         await _securitySystem.NotifySecurityGuard(anomalyEvent);
                         break;
-                        // Handle other priorities...
+                    default:
+                        await _securitySystem.NotifySecurityGuard(anomalyEvent);
+                        break;
+                    
+
                 }
             };
         }

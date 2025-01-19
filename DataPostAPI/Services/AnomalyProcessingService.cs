@@ -1,5 +1,4 @@
-﻿using DataPostAPI.Enums;
-using DataPostAPI.Handlers;
+﻿using DataPostAPI.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -12,6 +11,8 @@ using System.Net.Http;
 using System.Text;
 using System;
 using DataPostAPI.Data;
+using DataPostAPI.Models;
+using DataPostAPI.Enums;
 
 namespace DataPostAPI.Services
 {

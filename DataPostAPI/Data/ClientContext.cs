@@ -13,6 +13,7 @@ namespace DataPostAPI.Data
         {
         }
 
+        public DbSet<AnomalyEvent> anomalyEvents { get; set; }
         public DbSet<Client> Client { get; set; }
         public DbSet<Models.Action> Actions { get; set; }
         public DbSet<Camera> cameras { get; set; }

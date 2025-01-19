@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataPostAPI.Migrations
 {
-    public partial class initmig : Migration
+    public partial class init_mig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,6 +24,23 @@ namespace DataPostAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "anomalyEvents",
+                columns: table => new
+                {
+                    EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CameraId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AnomalyType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ZoneId = table.Column<int>(type: "int", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_anomalyEvents", x => x.EventId);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,6 +151,9 @@ namespace DataPostAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Admins");
+
+            migrationBuilder.DropTable(
+                name: "anomalyEvents");
 
             migrationBuilder.DropTable(
                 name: "Camera",
